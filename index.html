@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pension Calculator</title>
+    <style>
+        
+        /* nimemodify kidogo css style for good view  
+        Mfano table ni wekea scroll feature kama ile ya sr 2 pale ambapo result zako zitakuwa kubwa kuzidi max-width ya container*/
+                * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f9f9f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        
+        img {
+            max-width: 900px;
+            height: 85px;
+            margin-top: 50px;
+            border-radius: 15px;
+            display: block;
+            padding-left: 100px;
+        }
+
+        
+        .calculator-container {
+            background-color: #fff;
+            max-width: 900px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            text-align: left;
+            border-left: 5px solid #007ACC;
+            
+        }
+
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007ACC;
+            font-size: 5vw;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            h1 {
+                font-size: 3rem;
+            }
+        }
+
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #007ACC;
+        }
+
+        
+        button {
+            padding: 12px 16px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007ACC;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 4%;
+        }
+
+        button:hover {
+            background-color: #005f99;
+        }
+
+        
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007ACC;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        
+        .input-group,
+        button {
+            width: 100%;
+        }
+
+        
+        @media (min-width: 768px) {
+            .input-group {
+                display: flex;
+                justify-content: space-between;
+            }
+            .input-group label,
+            .input-group input {
+                width: 48%;
+            }
+        }
+
+        
+
+        
+    </style>
+</head>
+<body>
+
+ 
+    <div class="calculator-container">
+       <img src="psssf.png">
+  <br>
+        <h1 style="padding-left:20%;">Lumpsum & Monthly Pension Calculator</h1>
+        <p>Welcome to the Lumpsum & Monthly Pension Calculator...</p>
+        
+        <form id="pensionForm">
+            <!-- Input Fields -->
+            <div class="input-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="input-group">
+                <label for="joinDate">Date of Joining the Fund:</label>
+                <input type="date" id="joinDate" name="joinDate" required>
+            </div>
+            <div class="input-group">
+                <label for="exitDate">Date of Exiting the Fund:</label>
+                <input type="date" id="exitDate" name="exitDate" required>
+            </div>
+            <div class="input-group">
+                <label for="pensionDate">Starting date of receiving pension:</label>
+                <input type="date" id="pensionDate" name="pensionDate" required>
+            </div>
+            <div class="input-group">
+                <label for="salary">APE Salary (TZS):</label>
+                <input type="number" id="salary" name="salary" required>
+            </div>
+            <div class="input-group">
+                <label for="lifeExpectancy">Life Expectancy (Years):</label>
+                <input type="number" id="lifeExpectancy" name="lifeExpectancy" required>
+            </div>
+            <button type="button" id="calculateBtn">Calculate Pension</button>
+        </form>
+
+        <!-- Results Table -->
+        <div class="table-container">
+            <h2>Results Table</h2>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Date of Birth</th>
+                        <th>Joining Date</th>
+                        <th>Exiting Date</th>
+                        <th>Lumpsum (TZS)</th>
+                        <th>Monthly Pension (TZS)</th>
+                        <th>Annual Pension (TZS)</th>
+                        <th>Total Pension (TZS)</th>
+                        <th>Amount retained by the Fund</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <button id="downloadBtn"style="background-color:#007ACC;">Download</button>
+    </div>
+
+    <script>
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            // Get input values from user hre
+            const dob = new Date(document.getElementById('dob').value);
+            const joinDate = new Date(document.getElementById('joinDate').value);
+            const exitDate = new Date(document.getElementById('exitDate').value);
+            const pensionDate = new Date(document.getElementById('pensionDate').value);
+            const salary = parseFloat(document.getElementById('salary').value);
+            const lifeExpectancy = parseFloat(document.getElementById('lifeExpectancy').value);
+
+            // Calculate retirement date
+            const retireDate = new Date(dob);
+            retireDate.setFullYear(retireDate.getFullYear() + 60); // nime update formular  ile fomular ya mwanzo uliolyo kuwa umeandika haitoi output 
+            
+            // Calculate the service period in months
+            const servicePeriod = (exitDate.getFullYear() - joinDate.getFullYear()) * 12 +
+                                  (exitDate.getMonth() - joinDate.getMonth());
+            
+            // Calculate Annual Pension
+            const annualPension = (1 / 580) * 12 * salary * servicePeriod;
+
+            // Calculate Lump Sum
+            const lumpSum = annualPension * 12.5 * 0.33;
+
+            // Calculate Monthly Pension
+            const monthlyPension = (annualPension * 0.67) / 12;
+
+            // Calculate Total Pension Over Expected Years
+            const totalPension = monthlyPension * (lifeExpectancy * 12);
+
+            // Amount that would be retained by the Fund
+            const refund = totalPension - totalPension; // hapa jibu si zero
+
+            // Add results to the table
+            const resultsTable = document.querySelector('#resultsTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${dob.toLocaleDateString()}</td>
+                <td>${joinDate.toLocaleDateString()}</td>
+                <td>${exitDate.toLocaleDateString()}</td>
+                <td>${lumpSum.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${monthlyPension.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${annualPension.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${totalPension.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${refund.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+            `;
+            resultsTable.appendChild(newRow);
+        });
+
+        // Download results as CSV
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const table = document.getElementById('resultsTable');
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const csv = [];
+            
+            rows.forEach(row => {
+                const columns = Array.from(row.querySelectorAll('th, td')).map(column => column.textContent);
+                csv.push(columns.join(','));
+            });
+        
+            const csvString = csv.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'pension_file.csv';
+            link.click();
+        });
+    </script>
+</body>
+</html>
+
+
+
+<!--keeping coding 
+    keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+keep coding
+
+
+
+-->
